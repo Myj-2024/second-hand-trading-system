@@ -1,14 +1,17 @@
 package com.secondhandtradingsystem.controller;
 
 
+import com.github.pagehelper.Page;
 import com.secondhandtradingsystem.constant.JwtClaimsConstant;
 import com.secondhandtradingsystem.dto.UserLoginDTO;
+import com.secondhandtradingsystem.dto.UserDTO;
 import com.secondhandtradingsystem.entity.User;
-import com.secondhandtradingsystem.mapper.UserMapper;
 import com.secondhandtradingsystem.properties.JwtProperties;
+import com.secondhandtradingsystem.result.PageResult;
+import com.secondhandtradingsystem.dto.UserPageQueryDTO;
 import com.secondhandtradingsystem.service.UserService;
 import com.secondhandtradingsystem.util.JwtUtil;
-import com.secondhandtradingsystem.util.Result;
+import com.secondhandtradingsystem.result.Result;
 import com.secondhandtradingsystem.vo.UserLoginVO;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +43,7 @@ public class UserController {
     @PostMapping("/login")
     public Result<UserLoginVO> login(@RequestBody UserLoginDTO userLoginDTO){
         log.info("用户登录：{}", userLoginDTO);
-        User user = userService.login(userLoginDTO);
+        UserDTO user = userService.login(userLoginDTO);
 
         //登录成功后，生成jwt token返回给前端
         HashMap<String, Object> claims = new HashMap<>();
@@ -73,7 +76,7 @@ public class UserController {
             Long userId = Long.valueOf(claims.get(JwtClaimsConstant.USER_ID).toString());
 
             // 2. 查询用户信息
-            User user = userService.getById(userId);
+            UserDTO user = userService.getById(userId);
             if (user == null) {
                 return Result.error("用户不存在");
             }
@@ -97,5 +100,30 @@ public class UserController {
     @PostMapping("/logout")
     public Result<String> logout() {
         return Result.success();
+    }
+
+    /**
+     * 添加用户
+     * @param userDTO
+     * @return
+     */
+    @PostMapping("/add")
+    public Result add(@RequestBody UserDTO userDTO){
+        log.info("添加用户：{}", userDTO);
+        userService.add(userDTO);
+        return Result.success();
+    }
+
+    /**
+     * 分页查询
+     * @param userPageQueryDTO
+     * @return
+     */
+    @GetMapping("/page")
+    public Result<PageResult> page(UserPageQueryDTO userPageQueryDTO){
+        log.info("分页查询：{}", userPageQueryDTO);
+        Page<User> page = userService.pageQuery(userPageQueryDTO);
+        PageResult pageResult = new PageResult(page.getTotal(), page.getResult());
+        return Result.success(pageResult);
     }
 }

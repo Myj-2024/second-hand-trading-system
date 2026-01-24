@@ -1,13 +1,18 @@
 package com.secondhandtradingsystem.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
-/**
- * 用户实体（完全适配sys_user表字段）
- */
 @Data
-public class User {
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class User implements Serializable {
     private Long id; // 对应sys_user.id
     private String username; // 对应sys_user.username
     private String password; // 对应sys_user.password

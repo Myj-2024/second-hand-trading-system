@@ -1,4 +1,4 @@
-package com.secondhandtradingsystem.util;
+package com.secondhandtradingsystem.result;
 
 
 import lombok.Data;
