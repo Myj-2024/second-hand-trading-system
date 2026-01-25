@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.secondhandtradingsystem.mapper.GoodsMapper">
+
+
+    <insert id="addGoods">
+        insert into goods_info(goods_name, category_id, price, original_price, goods_desc, goods_images, status)
+        values
+            (#{goodsName}, #{categoryId}, #{price}, #{originalPrice}, #{goodsDesc}, #{goodsImages}, #{status})
+    </insert>
+    <update id="update">
+            update goods_info
+        <set>
+            <if test="goodsName != null">
+                goods_name = #{goodsName},
+            </if>
+            <if test="categoryId != null">
+                category_id = #{categoryId},
+            </if>
+            <if test="price != null">
+                price = #{price},
+            </if>
+            <if test="originalPrice != null">
+                original_price = #{originalPrice},
+            </if>
+            <if test="goodsDesc != null">
+                goods_desc = #{goodsDesc},
+            </if>
+            <if test="goodsImages != null">
+                goods_images = #{goodsImages},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+        </set>
+            where id = #{id}
+    </update>
+
+
+    <!-- 商品分页查询 -->
+    <select id="pageQuery" resultType="com.secondhandtradingsystem.vo.GoodsVO">
+        SELECT g.*, c.category_name as categoryName
+        FROM goods_info g
+        LEFT JOIN goods_category c ON g.category_id = c.id
+        <where>
+            <!-- 商品名称模糊查询 -->
+            <if test="goodsName != null and goodsName != ''">
+                and g.goods_name like concat('%', #{goodsName}, '%')
+            </if>
+            <!-- 分类ID精准查询 -->
+            <if test="categoryId != null">
+                and g.category_id = #{categoryId}
+            </if>
+            <!-- 商品状态精准查询（0下架 1上架） -->
+            <if test="status != null">
+                and g.status = #{status}
+            </if>
+        </where>
+
+        order by g.id
+    </select>
+</mapper>

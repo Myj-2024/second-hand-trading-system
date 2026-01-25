@@ -30,4 +30,6 @@ public class MessageConstant {
     public static final String USER_PASSWORD_RESET_SUCCESS = "用户密码重置成功";
     public static final String PARAMETER_ERROR = "用户ID不能为空";
     public static final String USER_PASSWORD_RESET_FAILED = "密码重置失败";
+    public static final String GOODS_ON_SALE = "上架中的商品不能删除";
+
 }

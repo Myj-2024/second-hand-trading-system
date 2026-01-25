@@ -1,8 +1,8 @@
 package com.secondhandtradingsystem.entity;
 
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
+
 import java.math.BigDecimal;
 
 /**
@@ -10,7 +10,10 @@ import java.math.BigDecimal;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class GoodsInfo extends BaseEntity {
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class Goods extends BaseEntity {
     // 主键ID
     private Long id;
     // 商品名称
