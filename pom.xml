@@ -109,6 +109,12 @@
             <version>1.4.7</version>
         </dependency>
 
+        <dependency>
+            <groupId>io.minio</groupId>
+            <artifactId>minio</artifactId>
+            <version>8.2.2</version>
+        </dependency>
+
     </dependencies>
 
     <!-- 依赖版本管理：仅声明版本，不引入依赖 -->

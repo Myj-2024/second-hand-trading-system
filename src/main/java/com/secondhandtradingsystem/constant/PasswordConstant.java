@@ -6,5 +6,7 @@ package com.secondhandtradingsystem.constant;
 public class PasswordConstant {
 
     public static final String DEFAULT_PASSWORD = "123456";
+    // 在MessageConstant类中添加
+
 
 }

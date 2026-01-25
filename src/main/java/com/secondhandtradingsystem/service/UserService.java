@@ -6,6 +6,8 @@ import com.secondhandtradingsystem.dto.UserDTO;
 import com.secondhandtradingsystem.entity.User;
 import com.secondhandtradingsystem.dto.UserPageQueryDTO;
 
+import java.util.List;
+
 public interface UserService {
 
     /**
@@ -34,4 +36,29 @@ public interface UserService {
      * @return
      */
     Page<User> pageQuery(UserPageQueryDTO userPageQueryDTO);
+
+    /**
+     * 根据用户名查询用户
+     * @param username
+     * @return
+     */
+    User getByUsername(String username);
+
+    /**
+     * 批量删除用户
+     * @param ids
+     */
+    void deleteBatch(List<Long> ids);
+
+    /**
+     * 修改用户信息
+     * @param userDTO
+     */
+    void update(UserDTO userDTO);
+
+    /**
+     * 重置密码
+     * @param id
+     */
+    void resetPassword(Long id);
 }

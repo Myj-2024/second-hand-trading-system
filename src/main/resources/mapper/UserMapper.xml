@@ -3,6 +3,44 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.secondhandtradingsystem.mapper.UserMapper">
 
+    <update id="update">
+        update sys_user
+        <set>
+            <if test="username != null and username != ''">
+                username = #{username},
+            </if>
+            <if test="nickname != null and nickname != ''">
+                nickname = #{nickname},
+            </if>
+            <if test="password != null and password != ''">
+                password = #{password},
+            </if>
+            <if test="phone != null and phone != ''">
+                phone = #{phone},
+            </if>
+            <if test="avatar != null and avatar != ''">
+                avatar = #{avatar},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            update_time = #{updateTime}
+        </set>
+        WHERE id = #{id}
+        AND is_deleted = 0
+    </update>
+
+
+    <update id="deleteBatch" parameterType="java.util.List">
+        UPDATE sys_user
+        SET is_deleted = 1,
+        update_time = NOW()
+        WHERE id IN
+        <foreach collection="list" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        AND is_deleted = 0
+    </update>
 
     <select id="pageQuery" resultType="com.secondhandtradingsystem.entity.User">
         select * from sys_user
@@ -17,4 +55,5 @@
         </where>
         order by create_time
     </select>
+
 </mapper>

@@ -9,6 +9,7 @@ import com.secondhandtradingsystem.dto.UserLoginDTO;
 import com.secondhandtradingsystem.dto.UserDTO;
 import com.secondhandtradingsystem.entity.User;
 import com.secondhandtradingsystem.exception.AccountLockedException;
+import com.secondhandtradingsystem.exception.DeletionNotAllowedException;
 import com.secondhandtradingsystem.exception.PasswordErrorException;
 import com.secondhandtradingsystem.mapper.UserMapper;
 import com.secondhandtradingsystem.dto.UserPageQueryDTO;
@@ -17,6 +18,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
+import org.springframework.util.StringUtils;
+
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -83,13 +86,20 @@ public class UserServiceImpl implements UserService {
         //设置账号状态，默认正常状态，1表示正常，0表示锁定
         user.setStatus(StatusConstant.ENABLE);
 
-        //设置密码，默认密码123456
-        user.setPassword(DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes()));
+        // 从UserDTO中获取用户自定义的密码
+        String userPassword = userDTO.getPassword();
+
+        // 非空校验：确保用户传入了密码（可选但推荐）
+        if (!StringUtils.hasText(userPassword)) {
+            throw new RuntimeException(MessageConstant.USER_PASSWORD_NOT_NULL); // 建议新增该常量，提示"用户密码不能为空"
+        }
+        // 使用用户传入的密码进行MD5加密后设置
+        user.setPassword(DigestUtils.md5DigestAsHex(userPassword.getBytes()));
 
         // 执行插入并校验结果
         int rows = userMapper.insert(user);
         if (rows == 0) {
-            throw new RuntimeException(MessageConstant.USER_ADD_FAILED); // 需在MessageConstant中添加该常量
+            throw new RuntimeException(MessageConstant.USER_ADD_FAILED);
         }
 
     }
@@ -119,4 +129,80 @@ public class UserServiceImpl implements UserService {
         // 5. 转换为Page对象
         return (Page<User>) userList;
     }
+
+    /**
+     * 根据用户名查询用户
+     * @param username
+     * @return
+     */
+    @Override
+    public User getByUsername(String username) {
+        User user = userMapper.getByUsername(username);
+        user.setPassword("****");
+        return user;
+    }
+
+    /**
+     * 批量删除用户
+     * @param ids
+     */
+    @Override
+    public void deleteBatch(List<Long> ids) {
+        for (Long id : ids) {
+            UserDTO user = userMapper.getById(id);
+            if (user == null) {
+                throw new DeletionNotAllowedException(MessageConstant.USER_NOT_FOUND);
+            }
+            if (user.getStatus() == StatusConstant.DISABLE) {
+                throw new DeletionNotAllowedException(MessageConstant.USER_LOCKED);
+            }
+        }
+        // 批量删除
+        int rows = userMapper.deleteBatch(ids);
+    }
+
+    /**
+     * 修改用户信息
+     * @param userDTO
+     */
+    @Override
+    public void update(UserDTO userDTO) {
+        User user = new User();
+        BeanUtils.copyProperties(userDTO, user);
+        userMapper.update(user);
+    }
+
+    /**
+     * 重置密码
+     * @param id
+     */
+    @Override
+    public void resetPassword(Long id) {
+        //校验参数
+        if (id == null || id <= 0){
+            throw new RuntimeException(MessageConstant.PARAMETER_ERROR);
+        }
+        //校验用户是否存在
+        UserDTO user = userMapper.getById(id);
+        if (user == null){
+            throw new RuntimeException(MessageConstant.USER_NOT_FOUND);
+        }
+
+        // 重置密码为123456
+        String defaultPwdMd5 = DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes(StandardCharsets.UTF_8));
+
+        // 构建更新用的User实体
+        User updateUser = new User();
+        updateUser.setId(id);
+        updateUser.setPassword(defaultPwdMd5);
+
+        // 调用Mapper更新数据库,复用update方法
+        int rows = userMapper.update(updateUser);
+
+        // 校验更新结果
+        if (rows == 0) {
+            throw new RuntimeException(MessageConstant.USER_PASSWORD_RESET_FAILED);
+        }
+    }
 }
+

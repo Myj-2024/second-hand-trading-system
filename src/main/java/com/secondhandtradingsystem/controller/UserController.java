@@ -3,6 +3,7 @@ package com.secondhandtradingsystem.controller;
 
 import com.github.pagehelper.Page;
 import com.secondhandtradingsystem.constant.JwtClaimsConstant;
+import com.secondhandtradingsystem.constant.MessageConstant;
 import com.secondhandtradingsystem.dto.UserLoginDTO;
 import com.secondhandtradingsystem.dto.UserDTO;
 import com.secondhandtradingsystem.entity.User;
@@ -15,10 +16,12 @@ import com.secondhandtradingsystem.result.Result;
 import com.secondhandtradingsystem.vo.UserLoginVO;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -37,11 +40,12 @@ public class UserController {
 
     /**
      * 用戶登录
+     *
      * @param userLoginDTO
      * @return
      */
     @PostMapping("/login")
-    public Result<UserLoginVO> login(@RequestBody UserLoginDTO userLoginDTO){
+    public Result<UserLoginVO> login(@RequestBody UserLoginDTO userLoginDTO) {
         log.info("用户登录：{}", userLoginDTO);
         UserDTO user = userService.login(userLoginDTO);
 
@@ -65,6 +69,7 @@ public class UserController {
 
     /**
      * 获取用户信息
+     *
      * @param token
      * @return
      */
@@ -95,6 +100,7 @@ public class UserController {
 
     /**
      * 用户登出
+     *
      * @return
      */
     @PostMapping("/logout")
@@ -104,11 +110,12 @@ public class UserController {
 
     /**
      * 添加用户
+     *
      * @param userDTO
      * @return
      */
     @PostMapping("/add")
-    public Result add(@RequestBody UserDTO userDTO){
+    public Result add(@RequestBody UserDTO userDTO) {
         log.info("添加用户：{}", userDTO);
         userService.add(userDTO);
         return Result.success();
@@ -116,14 +123,64 @@ public class UserController {
 
     /**
      * 分页查询
+     *
      * @param userPageQueryDTO
      * @return
      */
     @GetMapping("/page")
-    public Result<PageResult> page(UserPageQueryDTO userPageQueryDTO){
+    public Result<PageResult> page(UserPageQueryDTO userPageQueryDTO) {
         log.info("分页查询：{}", userPageQueryDTO);
         Page<User> page = userService.pageQuery(userPageQueryDTO);
         PageResult pageResult = new PageResult(page.getTotal(), page.getResult());
         return Result.success(pageResult);
+    }
+
+    /**
+     * 根据用户名查询用户
+     *
+     * @param username
+     * @return
+     */
+    @GetMapping("/getByUsername")
+    public Result<User> getByUsername(@RequestParam String username) {
+        log.info("根据用户名查询用户");
+        User user = userService.getByUsername(username);
+        if (user != null) {
+            return Result.success(user);
+        }
+        return Result.error(MessageConstant.USER_NOT_FOUND);
+    }
+
+    @DeleteMapping("/delete")
+    public Result delete(@RequestBody List<Long> ids) {
+        log.info("批量删除用户：{}", ids);
+        userService.deleteBatch(ids);
+        return Result.success();
+    }
+
+
+
+    /**
+     * 修改用户信息
+     * @param userDTO
+     * @return
+     */
+    @PutMapping("/update")
+    public Result update(@RequestBody UserDTO userDTO) {
+        log.info("更新用户信息：{}", userDTO);
+        userService.update(userDTO);
+        return Result.success();
+    }
+
+    /**
+     * 重置密码
+     * @param id
+     * @return
+     */
+    @PostMapping("/resetPwd/{id}")
+    public Result resetPassword(@PathVariable Long id) {
+        log.info("重置密码：{}", id);
+        userService.resetPassword(id);
+        return Result.success(MessageConstant.USER_PASSWORD_RESET_SUCCESS);
     }
 }
