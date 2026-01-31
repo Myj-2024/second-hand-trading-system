@@ -1,6 +1,8 @@
 # 二手物品交易管理系统（second-hand-trade-system）
 
 > 一套基于 Spring Boot + Vue 的前后端分离二手物品交易后台管理系统，提供商品、用户、订单、分类、留言等核心管理功能。
+>
+> [项目说明文档](https://ycdoc.de5.net/sts-doc/%E4%BA%8C%E6%89%8B%E7%89%A9%E5%93%81%E4%BA%A4%E6%98%93%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F.html)
 
 ## 项目预览
 
