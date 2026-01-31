@@ -1,15 +1,17 @@
 package com.secondhandtradingsystem.entity;
 
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import java.math.BigDecimal;
 
 /**
- * 订单表实体（纯 MyBatis 版本）
+ * 订单表实体
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
+@Builder
 public class OrderInfo extends BaseEntity {
     // 主键ID
     private Long id;

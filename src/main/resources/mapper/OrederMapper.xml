@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.secondhandtradingsystem.mapper.OrderMapper">
+    <!-- 修改订单状态（增强版，符合实际业务） -->
+    <update id="update" parameterType="com.secondhandtradingsystem.entity.OrderInfo">
+        UPDATE order_info
+        SET
+        status = #{status},
+        update_time = CURRENT_TIMESTAMP <!-- 同步更新修改时间，便于追溯操作记录 -->
+        WHERE
+        id = #{id}
+        AND is_deleted = 0 <!-- 只更新未被逻辑删除的订单 -->
+        AND #{status} IN (0, 1, 2, 3, 4) <!-- 校验状态合法性，防止传入无效值（对应你的5种状态） -->
+    </update>
+
+
+    <select id="page" resultType="com.secondhandtradingsystem.entity.OrderInfo">
+        select * from order_info
+        <where>
+            <if test="orderNo != null and orderNo!=''">
+                and order_no like concat('%',#{orderNo},'%')
+            </if>
+            <if test="goodsId != null and goodsId!=''">
+                and goods_id like concat('%',#{goodsId},'%')
+            </if>
+            <if test="buyerId != null">
+                and buyer_id = #{buyerId}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="sellerId != null">
+                and seller_id &gt;= #{sellerId}
+            </if>
+            <if test="price != null">
+                and price &lt;= #{price}
+            </if>
+        </where>
+        order by create_time
+    </select>
+</mapper>

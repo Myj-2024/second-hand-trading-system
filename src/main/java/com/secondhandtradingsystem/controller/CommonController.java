@@ -3,8 +3,8 @@ package com.secondhandtradingsystem.controller;
 import com.secondhandtradingsystem.constant.MessageConstant;
 import com.secondhandtradingsystem.result.Result;
 import com.secondhandtradingsystem.util.MinioUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -28,7 +28,7 @@ public class CommonController {
      * @return
      */
     @PostMapping( consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @ApiOperation("文件上传")
+    @Tag(name = "文件上传", description = "文件上传相关接口")
     public Result<String> upload(@RequestParam("file") MultipartFile file) {
         log.info("文件上传:{}",file);
         if (file.isEmpty()) {

@@ -45,11 +45,9 @@ public interface UserMapper {
      * SQL中：is_deleted固定为0（未删除），create_time/update_time由切面填充
      */
     @Insert("insert into sys_user (" +
-            "username, password, nickname, phone, avatar, status, " +
-            "create_time, update_time, is_deleted" +
+            "username, password, nickname, phone, avatar, status " +
             ") values (" +
-            "#{username}, #{password}, #{nickname}, #{phone}, #{avatar}, #{status}, " +
-            "#{createTime}, #{updateTime}, 0" +
+            "#{username}, #{password}, #{nickname}, #{phone}, #{avatar}, #{status}"+
             ")")
     @AutoFill(value = OperationType.INSERT)
     int insert(User user);  // 返回int：1=插入成功，0=失败

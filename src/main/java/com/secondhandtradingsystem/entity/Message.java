@@ -25,4 +25,5 @@ public class Message extends BaseEntity {
 
     // 留言内容
     private String content;
+
 }

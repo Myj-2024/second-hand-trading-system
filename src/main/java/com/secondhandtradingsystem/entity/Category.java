@@ -1,15 +1,17 @@
 package com.secondhandtradingsystem.entity;
 
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 /**
  * 商品分类表实体（纯 MyBatis 版本）
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class GoodsCategory extends BaseEntity {
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class Category extends BaseEntity {
     // 主键ID
     private Long id;
     // 分类名称

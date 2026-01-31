@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.secondhandtradingsystem.mapper.MessageMapper">
+
+
+    <select id="page" resultType="com.secondhandtradingsystem.vo.MessageVO">
+        SELECT
+        m.id,
+        m.order_id,
+        o.order_no,
+        m.from_user_id,
+        fu.username AS from_username,
+        m.to_user_id,
+        tu.username AS to_username,
+        m.content,
+        m.create_time
+        FROM
+        message m
+        LEFT JOIN
+        order_info o ON m.order_id = o.id
+        LEFT JOIN
+        sys_user fu ON m.from_user_id = fu.id
+        LEFT JOIN
+        sys_user tu ON m.to_user_id = tu.id
+        WHERE
+        m.is_deleted = 0
+        <!-- 订单编号模糊查询 -->
+        <if test="orderNo != null and orderNo != ''">
+            AND o.order_no LIKE CONCAT('%', #{orderNo}, '%')
+        </if>
+        <!-- 发送人用户名模糊查询 -->
+        <if test="fromUserName != null and fromUserName != ''">
+            AND fu.username LIKE CONCAT('%', #{fromUserName}, '%')
+        </if>
+        <!-- 接收人用户名模糊查询 -->
+        <if test="toUserName != null and toUserName != ''">
+            AND tu.username LIKE CONCAT('%', #{toUserName}, '%')
+        </if>
+        <!-- 按创建时间倒序排列（最新留言在前，符合业务逻辑） -->
+        ORDER BY
+        m.create_time DESC
+    </select>
+</mapper>

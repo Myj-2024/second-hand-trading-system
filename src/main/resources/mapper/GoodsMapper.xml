@@ -60,4 +60,19 @@
 
         order by g.id
     </select>
+
+
+    <!-- 新增：批量更新分类下商品状态 -->
+    <update id="batchUpdateGoodsStatusByCategory">
+        UPDATE goods_info
+        SET status = #{targetStatus},
+            update_time = NOW()
+        WHERE
+            category_id = #{categoryId}
+          AND status = CASE
+                           WHEN #{targetStatus} = 1 THEN 0  -- 上架：只改原状态=0的商品
+                           WHEN #{targetStatus} = 0 THEN 1  -- 下架：只改原状态=1的商品
+            END
+          AND is_deleted = 0
+    </update>
 </mapper>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.secondhandtradingsystem.mapper.CategoryMapper">
+    <insert id="add">
+        INSERT INTO goods_category (category_name) VALUES (#{categoryName})
+    </insert>
+    <update id="update">
+        UPDATE goods_category
+        <set>
+            <if test="categoryName != null">
+                category_name = #{categoryName},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <!-- 修复SQL语法错误，兼容PageHelper分页 -->
+    <select id="page" resultType="com.secondhandtradingsystem.entity.Category">
+        SELECT
+        c.id,
+        c.category_name,
+        c.create_time,
+        c.update_time,
+        c.is_deleted,
+        -- 统计分类下商品总数（过滤已删除商品）
+        COUNT(CASE WHEN g.is_deleted = 0 THEN g.id ELSE NULL END) AS totalGoodsCount,
+        -- 统计上架商品数（status=1且未删除）
+        SUM(CASE WHEN g.status = 1 AND g.is_deleted = 0 THEN 1 ELSE 0 END) AS onlineGoodsCount,
+        -- 统计下架商品数（status=0且未删除）
+        SUM(CASE WHEN g.status = 0 AND g.is_deleted = 0 THEN 1 ELSE 0 END) AS offlineGoodsCount
+        FROM goods_category c
+        -- 左关联商品表，确保无商品的分类也能显示
+        LEFT JOIN goods_info g ON c.id = g.category_id
+        WHERE c.is_deleted = 0 -- 直接写基础条件，去掉多余的AND
+        <if test="categoryName != null and categoryName != ''">
+            AND c.category_name LIKE CONCAT('%', #{categoryName}, '%')
+        </if>
+        -- 按分类主键分组，确保每个分类只返回一条数据
+        GROUP BY c.id, c.category_name,c.create_time, c.update_time, c.is_deleted
+        ORDER BY c.id ASC, c.create_time DESC
+    </select>
+</mapper>

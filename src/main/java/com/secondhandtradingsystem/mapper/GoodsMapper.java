@@ -7,6 +7,7 @@ import com.secondhandtradingsystem.entity.Goods;
 import com.secondhandtradingsystem.enums.OperationType;
 import com.secondhandtradingsystem.vo.GoodsVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
@@ -55,4 +56,24 @@ public interface GoodsMapper {
      */
     @Select("DELETE FROM goods_info WHERE id = #{id}")
     void deleteById(Long id);
+
+    /**
+     * 根据分类ID查询商品数量
+     *
+     * @param id 分类ID
+     * @return 商品数量
+     */
+    @Select("SELECT COUNT(id) FROM goods_info WHERE category_id = #{id}")
+    Integer countByCategoryId(Long id);
+
+
+    /**
+     * 批量更新分类下商品状态
+     * @param categoryId 分类ID
+     * @param targetStatus 目标状态
+     */
+    void batchUpdateGoodsStatusByCategory(
+            @Param("categoryId") Long categoryId,
+            @Param("targetStatus") Integer targetStatus
+    );
 }

@@ -1,6 +1,5 @@
 package com.secondhandtradingsystem.vo;
 
-import io.swagger.annotations.ApiModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

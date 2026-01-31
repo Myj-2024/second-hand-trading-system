@@ -1,12 +1,14 @@
 package com.secondhandtradingsystem.entity;
 
 
+import lombok.Builder;
 import lombok.Data;
 import java.math.BigDecimal;
 
 /**
  * 订单详情表实体
  */
+@Builder
 @Data
 public class OrderDetail {
     // 主键ID
